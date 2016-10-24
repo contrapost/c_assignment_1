@@ -6,9 +6,11 @@
 
 #define LENGTH_OF_LINE 256
 
-void sort(char **array, int counter);
+char** sort(char **array, int counter);
 
 int main(int argc, char* argv[]){
+
+	// ==================1. dealing with file==============================
 
 	// Checks if there is no arguments (filename isn't mentioned)
 	if(argc < 2) 
@@ -28,30 +30,38 @@ int main(int argc, char* argv[]){
 	{
     	file = fopen(filename, "r");
 	} 
-	else {
+	else 
+	{
    	 	printf("%s\n", "There is no file with such name!");
 		return -1;
 	}
 	
-	char **lines;
-	int sizeOfArray = 20;
-	int counter = 0;
+	// ==================2. populating the array===========================
+	char **lines; // Pointer to pointers to a number of characters
+	int sizeOfArray = 20; // Original number of strings 
+	int counter = 0; // Count number of actual strings
+	char line[LENGTH_OF_LINE]; // Default string
 	
+	// Allocate memory for array of strings
 	lines = malloc(sizeOfArray * sizeof(char*));
 	
+	// Allocate array of chars (representing string) on each index of
+	// the original array (lines)
 	for(int i = 0; i < sizeOfArray; i++)
 	{
 		lines[i]=malloc(LENGTH_OF_LINE * sizeof(char));
 	}
 	
-	char line[LENGTH_OF_LINE];
-	
-	while (fgets(line, LENGTH_OF_LINE, file)) {
+	// Iterates through all lines in file and reallocates memory when necessary
+	while (fgets(line, LENGTH_OF_LINE, file)) 
+	{
         
-        if (sizeOfArray > counter) {
+        if (sizeOfArray > counter) 
+        {
         	strcpy(lines[counter++], line);
 		} 
-		else {
+		else // if number of strings is equal to the length of array we double 
+		{    // the size of the array
 			sizeOfArray *= 2;
 			lines = realloc(lines, sizeof(char*)*(sizeOfArray));
 			if (lines == NULL) {
@@ -71,20 +81,45 @@ int main(int argc, char* argv[]){
 		}
     }
 	
+	// Closes the file
 	fclose(file);
 	
-	sort(lines, counter);
+	// Calls sort function
+	lines = (sort(lines, counter));
+	
+	// Prints the result
+	for(int i = 0; i < counter; i++) {
+		printf("%d. %s", i + 1, lines[i]);
+	}
+	
+	// Frees allocated memory
+	free(lines);
 	
 	return 0;
 } 
 
-void sort(char **array, int length){
-	//int swap = 0;
-	
-	for(int i = 0; i < length; i++) {
-		printf("%d. %s", i + 1, array[i]);
-	}
-	
-	free(array);
+char** sort(char **array, int length){
+	int cmp;
+    char tmpLine[LENGTH_OF_LINE];
+
+    if (length <= 1)
+        return array; // Already sorted
+
+    for (int i = 0; i < length; i++)
+    {
+        for (int j = 0; j < length-1; j++)
+        {
+            cmp = strcmp(array[j], array[j+1]);
+
+            if (cmp > 0)
+            {
+                strcpy(tmpLine, array[j+1]);
+                strcpy(array[j+1], array[j]);
+                strcpy(array[j], tmpLine);
+            }
+        }
+    }
+
+	return array;
 }
 
