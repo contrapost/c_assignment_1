@@ -47,30 +47,31 @@ int main(int argc, char* argv[]){
 	char line[LENGTH_OF_LINE];
 	
 	while (fgets(line, LENGTH_OF_LINE, file)) {
-        /* note that fgets don't strip the terminating \n, checking its
-           presence would allow to handle lines longer that sizeof(line) */ 
         
         if (sizeOfArray > counter) {
-			lines[counter++] = line;
-			printf("%d. %s", counter, lines[counter - 1]);
+        	strcpy(lines[counter++], line);
 		} 
 		else {
 			sizeOfArray *= 2;
-			lines = realloc(lines, sizeof(char*)*(sizeOfArray++));
-			lines[counter++] = line;
-			printf("(from else) %d. %s", counter, lines[counter - 1]);
+			lines = realloc(lines, sizeof(char*)*(sizeOfArray));
 			if (lines == NULL) {
 				printf("Can't allocate memory\n");
 		  		return -1;
 			}
+			
+			for(int i = 0; i < sizeOfArray; i++)
+			{
+				lines[i]=realloc(lines[i], LENGTH_OF_LINE * sizeof(char));
+				if (lines[i] == NULL) {
+				printf("Can't allocate memory\n");
+		  		return -1;
+				}
+			}
+			strcpy(lines[counter++], line);
 		}
     }
 	
 	fclose(file);
-	
-	for(int i = 0; i < counter; i++) {
-		printf("%d. %s", i, lines[i]);
-	}
 	
 	sort(lines, counter);
 	
@@ -81,10 +82,8 @@ void sort(char **array, int length){
 	//int swap = 0;
 	
 	for(int i = 0; i < length; i++) {
-		printf("%d. %s", i, array[i]);
+		printf("%d. %s", i + 1, array[i]);
 	}
-	
-	printf("length: %d", length);
 	
 	free(array);
 }
