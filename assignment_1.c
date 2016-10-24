@@ -58,74 +58,108 @@ int main(int argc, char* argv[]){
 	// Iterates through all lines in file and reallocates memory when necessary
 	while (fgets(line, LENGTH_OF_LINE, file)) 
 	{
-        
+        // Populates the array with lines from file untill the array isn't full.
         if (sizeOfArray > counter) 
         {
         	strcpy(lines[counter++], line);
 		} 
-		else // if number of strings is equal to the length of array we double 
-		{    // the size of the array
-			sizeOfArray++;
+		else // When array is full(sizeOfArray == counter), enlarges the array.
+		{    
+			int sizeOfPrevious = sizeOfArray;
+			
+			// If the number of strings is equal to the length of the array, 
+			// the program doubles the size of the array.
+			sizeOfArray *= 2;
+			
+			// Reallocates memory for the enlarged array.
 			lines = realloc(lines, sizeof(char*)*(sizeOfArray));
 			if (lines == NULL) {
 				printf("Can't allocate memory\n");
 		  		return -1;
 			}
 			
+			// (Re)allocates memory for strings.
 			for(int i = 0; i < sizeOfArray; i++)
 			{
-				lines[i]=realloc(lines[i], LENGTH_OF_LINE * sizeof(char));
-				if (lines[i] == NULL) {
-				printf("Can't allocate memory\n");
-		  		return -1;
+				// Reallocates memory for the existing strings.
+				if(i < sizeOfPrevious) 
+				{
+					lines[i]=realloc(lines[i], LENGTH_OF_LINE * sizeof(char));
+					if (lines[i] == NULL) 
+					{
+						printf("Can't allocate memory\n");
+				  		return -1;
+					}
+				}
+				//Allocates memory for new strings.
+				else
+				{
+					lines[i]=malloc(LENGTH_OF_LINE * sizeof(char));
 				}
 			}
+			// Copies the last line that was read from file to the first empty
+			// index in the array.
 			strcpy(lines[counter++], line);
 		}
     }
 	
-	// Closes the file
+	// Closes the file.
 	fclose(file);
 	
 	// ============ 3. sorting and printing the array =======================
 	
-	// Calls sort function
+	// Calls sort function.
 	lines = sort(lines, counter);
 	
-	// Prints the result
+	// Prints the result.
 	for(int i = 0; i < counter; i++) {
 		printf("%d. %s", i + 1, lines[i]);
 	}
 	
+	// =================== 4. freeing the memory ============================
 	for(int i = 0; i < sizeOfArray; i++) {
 		free(lines[i]);
 	}
-	
-	// Frees allocated memory
+
 	free(lines);
 	
 	return 0;
 } 
 
 char** sort(char **array, int length){
-	int cmp;
+	int comparisionResult;
     char tmpLine[LENGTH_OF_LINE];
 
+	// Checks if there is only one element in the array so it's unnecessary
+	// to sort it.
     if (length <= 1)
-        return array; // Already sorted
-
-    for (int i = 0; i < length; i++)
     {
-        for (int j = 0; j < length-1; j++)
+        return array;
+	}
+	
+	// Iterates through the array until it's sorted.
+    for (int i = 0; i < length - 1; i++)
+    {
+    	int swapped = 0;
+    	// Compares each neighboring pair of elements.
+        for (int j = 0; j < length - i - 1; j++)
         {
-            cmp = strcmp(array[j], array[j+1]);
-
-            if (cmp > 0)
+            comparisionResult = strcmp(array[j], array[j+1]);
+			
+			// Swaps the elements if they are in wrong order.
+            if (comparisionResult > 0)
             {
                 strcpy(tmpLine, array[j+1]);
                 strcpy(array[j+1], array[j]);
                 strcpy(array[j], tmpLine);
+                swapped = 1;
             }
+        }
+        
+        // If swapped hasn't been change, it means that array is already sorted.
+        if(swapped == 0)
+        {
+        	break;
         }
     }
 
