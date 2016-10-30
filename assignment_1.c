@@ -19,24 +19,18 @@ int main(int argc, char* argv[]){
 		return -1;
 	}
 
-	char *filename;
-	filename = malloc(20*sizeof(char));
-	strcpy(filename, argv[1]);
-	
 	FILE * file;
 	
 	// Checks if the file exists and opens it
-	if(access(filename, F_OK ) != -1)
+	if(access(argv[1], F_OK ) != -1)
 	{
-    	file = fopen(filename, "r");
+    	file = fopen(argv[1], "r");
 	} 
 	else 
 	{
    	 	printf("%s\n", "There is no file with such name!");
 		return -1;
 	}
-	
-	free(filename);
 	
 	// ================== 2. populating the array ===========================
 	
