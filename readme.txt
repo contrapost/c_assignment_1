@@ -1,5 +1,7 @@
 ## Assignment 1
 
+### Author: Alexander Shipunov
+
 ### Opening the file
 Reading from file is managed in the first part of the program (see respective 
 comment). Inlines 16-20 the program checks if the user forgot to pass any 

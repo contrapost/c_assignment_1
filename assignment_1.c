@@ -4,6 +4,8 @@
 #include <string.h>
 #include <unistd.h>
 
+// Created by Alexander Shipunov
+
 #define LENGTH_OF_LINE 256
 
 char** sort(char **array, int counter);
